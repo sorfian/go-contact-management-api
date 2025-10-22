@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/sorfian/go-todo-list/helper"
 	"github.com/sorfian/go-todo-list/model/domain"
 	"github.com/sorfian/go-todo-list/model/web"
 	"github.com/sorfian/go-todo-list/repository"
@@ -21,8 +22,34 @@ func NewUserService(userRepository repository.UserRepository, DB *gorm.DB, valid
 }
 
 func (u *UserServiceImpl) Register(ctx context.Context, request *web.UserRegisterRequest) {
-	//TODO implement me
-	panic("implement me")
+	err := u.Validate.Struct(request)
+	helper.PanicIfError(err)
+
+	tx := u.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+
+	_, err = u.UserRepository.FindByUsername(ctx, tx, request.Username)
+	if err == nil {
+		panic(helper.NewNotFoundError("username already exists"))
+	}
+
+	hashedPassword, err := helper.HashPassword(request.Password)
+	helper.PanicIfError(err)
+
+	token, err := helper.GenerateToken()
+	helper.PanicIfError(err)
+
+	tokenExp := helper.GetTokenExpiration(30)
+
+	userData := domain.User{
+		Username: request.Username,
+		Password: hashedPassword,
+		Name:     request.Name,
+		Token:    token,
+		TokenExp: tokenExp,
+	}
+
+	u.UserRepository.Create(ctx, tx, userData)
 }
 
 func (u *UserServiceImpl) Login(ctx context.Context, request *web.UserLoginRequest) web.TokenResponse {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/sorfian/go-todo-list/helper"
 	"github.com/sorfian/go-todo-list/model/domain"
+	"gorm.io/gorm"
 )
 
 type UserRepositoryImpl struct {
@@ -15,48 +16,19 @@ func NewUserRepository() UserRepository {
 	return &UserRepositoryImpl{}
 }
 
-func (repository *UserRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, user *domain.User) domain.User {
-	SQL := `INSERT INTO users (username, password, name, token, token_exp) VALUES (?, ?, ?, ?, ?)`
-
-	hashedPassword, err := helper.HashPassword(user.Password)
+func (repository *UserRepositoryImpl) Create(ctx context.Context, tx *gorm.DB, user domain.User) domain.User {
+	err := tx.WithContext(ctx).Create(&user).Error
 	helper.PanicIfError(err)
-
-	token, err := helper.GenerateToken()
-	helper.PanicIfError(err)
-
-	tokenExp := helper.GetTokenExpiration(30)
-
-	execContext, err := tx.ExecContext(ctx, SQL, user.Username, hashedPassword, user.Name, token, tokenExp)
-	helper.PanicIfError(err)
-
-	id, err := execContext.LastInsertId()
-	helper.PanicIfError(err)
-
-	user.ID = int(id)
-	user.Password = hashedPassword
-	user.Token = token
-	user.TokenExp = tokenExp
-
-	return *user
+	return user
 }
 
-func (repository *UserRepositoryImpl) FindByUsername(ctx context.Context, tx *sql.Tx, username string) (*domain.User, error) {
-	SQL := `SELECT id, username, password, name, token, token_exp FROM users WHERE username = ?`
-	rows, err := tx.QueryContext(ctx, SQL, username)
+func (repository *UserRepositoryImpl) FindByUsername(ctx context.Context, tx *gorm.DB, username string) (*domain.User, error) {
+	user := domain.User{}
+	err := tx.WithContext(ctx).Where("username = ?", username).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	user := &domain.User{}
-	if rows.Next() {
-		err := rows.Scan(&user.ID, &user.Username, &user.Password, &user.Name, &user.Token, &user.TokenExp)
-		if err != nil {
-			return nil, err
-		}
-		return user, nil
-	}
-	return nil, sql.ErrNoRows
+	return &user, nil
 }
 
 func (repository *UserRepositoryImpl) FindByToken(ctx context.Context, tx *sql.Tx, token string) (*domain.User, error) {
