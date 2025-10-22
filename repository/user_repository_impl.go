@@ -85,32 +85,6 @@ func (repository *UserRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, us
 	return *user
 }
 
-func (repository *UserRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, user *domain.User) {
-	SQL := `DELETE FROM users WHERE id = ?`
-	_, err := tx.ExecContext(ctx, SQL, user.ID)
-	helper.PanicIfError(err)
-}
-
-func (repository *UserRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]*domain.User, error) {
-	SQL := `SELECT id, username, password, name, token, token_exp FROM users`
-	rows, err := tx.QueryContext(ctx, SQL)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var users []*domain.User
-	for rows.Next() {
-		user := &domain.User{}
-		err := rows.Scan(&user.ID, &user.Username, &user.Password, &user.Name, &user.Token, &user.TokenExp)
-		if err != nil {
-			return nil, err
-		}
-		users = append(users, user)
-	}
-	return users, nil
-}
-
 func (repository *UserRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, id int) (*domain.User, error) {
 	SQL := `SELECT id, username, password, name, token, token_exp FROM users WHERE id = ?`
 	rows, err := tx.QueryContext(ctx, SQL, id)

@@ -12,7 +12,5 @@ type UserRepository interface {
 	FindByUsername(ctx context.Context, tx *sql.Tx, username string) (*domain.User, error)
 	FindByToken(ctx context.Context, tx *sql.Tx, token string) (*domain.User, error)
 	Update(ctx context.Context, tx *sql.Tx, user *domain.User) domain.User
-	Delete(ctx context.Context, tx *sql.Tx, user *domain.User)
-	FindAll(ctx context.Context, tx *sql.Tx) ([]*domain.User, error)
 	FindById(ctx context.Context, tx *sql.Tx, id int) (*domain.User, error)
 }
