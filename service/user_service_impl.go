@@ -20,14 +20,14 @@ func NewUserService(userRepository repository.UserRepository, DB *gorm.DB, valid
 	return &UserServiceImpl{UserRepository: userRepository, DB: DB, Validate: validate}
 }
 
-func (u *UserServiceImpl) Register(ctx *fiber.Ctx, request *web.UserRegisterRequest) web.TokenResponse {
-	err := u.Validate.Struct(request)
+func (service *UserServiceImpl) Register(ctx *fiber.Ctx, request *web.UserRegisterRequest) web.TokenResponse {
+	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
-	tx := u.DB.Begin()
+	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
-	_, err = u.UserRepository.FindByUsername(ctx, tx, request.Username)
+	_, err = service.UserRepository.FindByUsername(ctx, tx, request.Username)
 	if err == nil {
 		panic(helper.NewNotFoundError("username already exists"))
 	}
@@ -48,27 +48,82 @@ func (u *UserServiceImpl) Register(ctx *fiber.Ctx, request *web.UserRegisterRequ
 		TokenExp: tokenExp,
 	}
 
-	createdUser := u.UserRepository.Create(ctx, tx, userData)
+	createdUser := service.UserRepository.Create(ctx, tx, userData)
 
 	return web.TokenResponse{Token: createdUser.Token, TokenExp: createdUser.TokenExp}
 }
 
-func (u *UserServiceImpl) Login(ctx *fiber.Ctx, request *web.UserLoginRequest) web.TokenResponse {
-	//TODO implement me
-	panic("implement me")
+func (service *UserServiceImpl) Login(ctx *fiber.Ctx, request *web.UserLoginRequest) web.TokenResponse {
+	err := service.Validate.Struct(request)
+	helper.PanicIfError(err)
+
+	tx := service.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+
+	user, err := service.UserRepository.FindByUsername(ctx, tx, request.Username)
+	if err != nil {
+		panic(helper.NewNotFoundError("username is incorrect"))
+	}
+
+	err = helper.VerifyPassword(user.Password, request.Password)
+	if err != nil {
+		panic(helper.NewNotFoundError("password is incorrect"))
+	}
+
+	token, err := helper.GenerateToken()
+	helper.PanicIfError(err)
+
+	tokenExp := helper.GetTokenExpiration(30)
+
+	user.Token = token
+	user.TokenExp = tokenExp
+
+	updatedUser := service.UserRepository.Update(ctx, tx, user)
+
+	return web.TokenResponse{
+		Token:    updatedUser.Token,
+		TokenExp: updatedUser.TokenExp,
+	}
 }
 
-func (u *UserServiceImpl) Get(ctx *fiber.Ctx, user domain.User) web.UserResponse {
-	//TODO implement me
-	panic("implement me")
+func (service *UserServiceImpl) Get(ctx *fiber.Ctx, user domain.User) web.UserResponse {
+	return web.UserResponse{
+		Username: user.Username,
+		Name:     user.Name,
+	}
 }
 
-func (u *UserServiceImpl) Logout(ctx *fiber.Ctx, user domain.User) {
-	//TODO implement me
-	panic("implement me")
+func (service *UserServiceImpl) Logout(ctx *fiber.Ctx, user domain.User) {
+	tx := service.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+
+	user.Token = ""
+	user.TokenExp = 0
+
+	service.UserRepository.Update(ctx, tx, &user)
 }
 
-func (u *UserServiceImpl) Update(ctx *fiber.Ctx, user domain.User, request web.UserUpdateRequest) web.UserResponse {
-	//TODO implement me
-	panic("implement me")
+func (service *UserServiceImpl) Update(ctx *fiber.Ctx, user domain.User, request web.UserUpdateRequest) web.UserResponse {
+	err := service.Validate.Struct(request)
+	helper.PanicIfError(err)
+
+	tx := service.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+
+	if request.Name != "" {
+		user.Name = request.Name
+	}
+
+	if request.Password != "" {
+		hashedPassword, err := helper.HashPassword(request.Password)
+		helper.PanicIfError(err)
+		user.Password = hashedPassword
+	}
+
+	updatedUser := service.UserRepository.Update(ctx, tx, &user)
+
+	return web.UserResponse{
+		Username: updatedUser.Username,
+		Name:     updatedUser.Name,
+	}
 }
