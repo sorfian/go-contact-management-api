@@ -10,7 +10,7 @@ import (
 )
 
 func Connect() *gorm.DB {
-	dialect := mysql.Open("root:sorfia26@tcp(localhost:3306)/go_todo_list?charset=utf8mb4&parseTime=True&loc=Local")
+	dialect := mysql.Open("root@tcp(localhost:3306)/go_todo_list?charset=utf8mb4&parseTime=True&loc=Local")
 	gormDB, err := gorm.Open(dialect, &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
