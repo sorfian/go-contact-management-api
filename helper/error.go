@@ -7,25 +7,37 @@ func PanicIfError(err error) {
 }
 
 type NotFoundError struct {
-	Error string
+	Err string
+}
+
+func (e NotFoundError) Error() string {
+	return e.Err
 }
 
 func NewNotFoundError(error string) NotFoundError {
-	return NotFoundError{Error: error}
+	return NotFoundError{Err: error}
 }
 
 type BadRequestError struct {
-	Error string
+	Err string
+}
+
+func (e BadRequestError) Error() string {
+	return e.Err
 }
 
 func NewBadRequestError(error string) BadRequestError {
-	return BadRequestError{Error: error}
+	return BadRequestError{Err: error}
 }
 
 type UnauthorizedError struct {
-	Error string
+	Err string
+}
+
+func (e UnauthorizedError) Error() string {
+	return e.Err
 }
 
 func NewUnauthorizedError(error string) UnauthorizedError {
-	return UnauthorizedError{Error: error}
+	return UnauthorizedError{Err: error}
 }
