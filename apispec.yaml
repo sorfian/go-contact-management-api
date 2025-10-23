@@ -8,9 +8,9 @@ info:
     email: sorfian.tkj@gmail.com
 
 servers:
-  - url: http://localhost:8080/api
+  - url: http://localhost:3000/api
     description: Development server
-  - url: https://api.usermanagement.com
+  - url: https://todo.signal.id/api
     description: Production server
 
 tags:
