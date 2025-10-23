@@ -1,9 +1,8 @@
 package service
 
 import (
-	"context"
-
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 	"github.com/sorfian/go-todo-list/helper"
 	"github.com/sorfian/go-todo-list/model/domain"
 	"github.com/sorfian/go-todo-list/model/web"
@@ -21,7 +20,7 @@ func NewUserService(userRepository repository.UserRepository, DB *gorm.DB, valid
 	return &UserServiceImpl{UserRepository: userRepository, DB: DB, Validate: validate}
 }
 
-func (u *UserServiceImpl) Register(ctx context.Context, request *web.UserRegisterRequest) {
+func (u *UserServiceImpl) Register(ctx *fiber.Ctx, request *web.UserRegisterRequest) web.TokenResponse {
 	err := u.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -49,25 +48,27 @@ func (u *UserServiceImpl) Register(ctx context.Context, request *web.UserRegiste
 		TokenExp: tokenExp,
 	}
 
-	u.UserRepository.Create(ctx, tx, userData)
+	createdUser := u.UserRepository.Create(ctx, tx, userData)
+
+	return web.TokenResponse{Token: createdUser.Token, TokenExp: createdUser.TokenExp}
 }
 
-func (u *UserServiceImpl) Login(ctx context.Context, request *web.UserLoginRequest) web.TokenResponse {
+func (u *UserServiceImpl) Login(ctx *fiber.Ctx, request *web.UserLoginRequest) web.TokenResponse {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (u *UserServiceImpl) Get(ctx context.Context, user domain.User) web.UserResponse {
+func (u *UserServiceImpl) Get(ctx *fiber.Ctx, user domain.User) web.UserResponse {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (u *UserServiceImpl) Logout(ctx context.Context, user domain.User) {
+func (u *UserServiceImpl) Logout(ctx *fiber.Ctx, user domain.User) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (u *UserServiceImpl) Update(ctx context.Context, user domain.User, request web.UserUpdateRequest) web.UserResponse {
+func (u *UserServiceImpl) Update(ctx *fiber.Ctx, user domain.User, request web.UserUpdateRequest) web.UserResponse {
 	//TODO implement me
 	panic("implement me")
 }
