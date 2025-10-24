@@ -31,16 +31,16 @@ func (repository *UserRepositoryImpl) FindByUsername(ctx *fiber.Ctx, tx *gorm.DB
 
 func (repository *UserRepositoryImpl) FindByToken(ctx *fiber.Ctx, tx *gorm.DB, token string) (*domain.User, error) {
 
-	user := domain.User{}
+	user := &domain.User{}
 	err := tx.WithContext(ctx.UserContext()).Where("token = ?", token).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return user, nil
 }
 
 func (repository *UserRepositoryImpl) Update(ctx *fiber.Ctx, tx *gorm.DB, user *domain.User) domain.User {
-	err := tx.WithContext(ctx.UserContext()).Updates(user).Error
+	err := tx.WithContext(ctx.UserContext()).Save(user).Error
 	helper.PanicIfError(err)
 	return *user
 }

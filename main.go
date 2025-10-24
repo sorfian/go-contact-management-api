@@ -6,7 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	recover2 "github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/sorfian/go-todo-list/app"
 	"github.com/sorfian/go-todo-list/controller"
 	"github.com/sorfian/go-todo-list/helper"
@@ -33,6 +33,10 @@ func main() {
 				code = e.Code
 				status = helper.GetStatusText(e.Code)
 				message = e.Message
+			case validator.ValidationErrors:
+				code = fiber.StatusBadRequest
+				status = "Bad Request"
+				message = "Validation failed: " + e.Error()
 			case helper.NotFoundError:
 				code = fiber.StatusNotFound
 				status = "Not Found"
@@ -56,7 +60,7 @@ func main() {
 	})
 
 	// Middleware
-	fiberApp.Use(recover2.New())
+	fiberApp.Use(recover.New())
 	fiberApp.Use(logger.New())
 
 	// Setup routes

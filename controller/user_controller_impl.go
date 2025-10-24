@@ -49,9 +49,9 @@ func (controller *UserControllerImpl) Login(ctx *fiber.Ctx) error {
 
 func (controller *UserControllerImpl) Get(ctx *fiber.Ctx) error {
 	// Get user from context (should be set by auth middleware)
-	user := ctx.Locals("user").(domain.User)
+	user := ctx.Locals("user").(*domain.User)
 
-	userResponse := controller.UserService.Get(ctx, user)
+	userResponse := controller.UserService.Get(ctx, *user)
 
 	webResponse := web.Response{
 		Code:   200,
@@ -64,9 +64,9 @@ func (controller *UserControllerImpl) Get(ctx *fiber.Ctx) error {
 
 func (controller *UserControllerImpl) Logout(ctx *fiber.Ctx) error {
 	// Get user from context (should be set by auth middleware)
-	user := ctx.Locals("user").(domain.User)
+	user := ctx.Locals("user").(*domain.User)
 
-	controller.UserService.Logout(ctx, user)
+	controller.UserService.Logout(ctx, *user)
 
 	webResponse := web.Response{
 		Code:   200,
@@ -79,13 +79,13 @@ func (controller *UserControllerImpl) Logout(ctx *fiber.Ctx) error {
 
 func (controller *UserControllerImpl) Update(ctx *fiber.Ctx) error {
 	// Get user from context (should be set by auth middleware)
-	user := ctx.Locals("user").(domain.User)
+	user := ctx.Locals("user").(*domain.User)
 
 	var request web.UserUpdateRequest
 	err := ctx.BodyParser(&request)
 	helper.PanicIfError(err)
 
-	userResponse := controller.UserService.Update(ctx, user, request)
+	userResponse := controller.UserService.Update(ctx, *user, request)
 
 	webResponse := web.Response{
 		Code:   200,

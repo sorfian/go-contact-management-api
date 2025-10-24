@@ -51,6 +51,7 @@ func (middleware *AuthMiddleware) Authenticate() fiber.Handler {
 		defer func() {
 			if r := recover(); r != nil {
 				tx.Rollback()
+				panic(r)
 			}
 		}()
 
