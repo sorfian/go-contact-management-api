@@ -18,9 +18,22 @@ import (
 func main() {
 	db := app.Connect()
 	validate := validator.New()
+
+	// Initialize repositories
 	userRepository := repository.NewUserRepository()
+	contactRepository := repository.NewContactRepository()
+	addressRepository := repository.NewAddressRepository()
+
+	// Initialize services
 	userService := service.NewUserService(userRepository, db, validate)
+	contactService := service.NewContactService(contactRepository, db, validate)
+	addressService := service.NewAddressService(addressRepository, contactRepository, db, validate)
+
+	// Initialize controllers
 	userController := controller.NewUserController(userService)
+	contactController := controller.NewContactController(contactService)
+	addressController := controller.NewAddressController(addressService)
+
 	fiberApp := fiber.New(fiber.Config{
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
@@ -64,7 +77,7 @@ func main() {
 	fiberApp.Use(logger.New())
 
 	// Setup routes
-	app.Router(fiberApp, userController, userRepository, db)
+	app.Router(fiberApp, userController, contactController, addressController, userRepository, db)
 
 	// Start server
 	log.Fatal(fiberApp.Listen(":3000"))

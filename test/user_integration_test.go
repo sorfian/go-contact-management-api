@@ -29,9 +29,21 @@ var (
 func setupTestApp() {
 	testDB = app.Connect()
 	validate := validator.New()
+
+	// Initialize repositories
 	testUserRepository = repository.NewUserRepository()
+	contactRepository := repository.NewContactRepository()
+	addressRepository := repository.NewAddressRepository()
+
+	// Initialize services
 	userService := service.NewUserService(testUserRepository, testDB, validate)
+	contactService := service.NewContactService(contactRepository, testDB, validate)
+	addressService := service.NewAddressService(addressRepository, contactRepository, testDB, validate)
+
+	// Initialize controllers
 	userController := controller.NewUserController(userService)
+	contactController := controller.NewContactController(contactService)
+	addressController := controller.NewAddressController(addressService)
 
 	testApp = fiber.New(fiber.Config{
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
@@ -75,7 +87,7 @@ func setupTestApp() {
 		EnableStackTrace: false,
 	}))
 
-	app.Router(testApp, userController, testUserRepository, testDB)
+	app.Router(testApp, userController, contactController, addressController, testUserRepository, testDB)
 }
 
 func cleanupTestData() {
