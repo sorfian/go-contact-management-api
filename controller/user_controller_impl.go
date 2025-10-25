@@ -5,6 +5,7 @@ import (
 	"github.com/sorfian/go-todo-list/helper"
 	"github.com/sorfian/go-todo-list/model/domain"
 	"github.com/sorfian/go-todo-list/model/web"
+	"github.com/sorfian/go-todo-list/model/web/user"
 	"github.com/sorfian/go-todo-list/service"
 )
 
@@ -16,7 +17,7 @@ func NewUserController(userService service.UserService) UserController {
 	return &UserControllerImpl{UserService: userService}
 }
 func (controller *UserControllerImpl) Register(ctx *fiber.Ctx) error {
-	request := web.UserRegisterRequest{}
+	request := user.UserRegisterRequest{}
 	err := ctx.BodyParser(&request)
 	helper.PanicIfError(err)
 
@@ -32,7 +33,7 @@ func (controller *UserControllerImpl) Register(ctx *fiber.Ctx) error {
 }
 
 func (controller *UserControllerImpl) Login(ctx *fiber.Ctx) error {
-	request := web.UserLoginRequest{}
+	request := user.UserLoginRequest{}
 	err := ctx.BodyParser(&request)
 	helper.PanicIfError(err)
 
@@ -49,9 +50,9 @@ func (controller *UserControllerImpl) Login(ctx *fiber.Ctx) error {
 
 func (controller *UserControllerImpl) Get(ctx *fiber.Ctx) error {
 	// Get user from context (should be set by auth middleware)
-	user := ctx.Locals("user").(*domain.User)
+	newUser := ctx.Locals("user").(*domain.User)
 
-	userResponse := controller.UserService.Get(ctx, *user)
+	userResponse := controller.UserService.Get(ctx, *newUser)
 
 	webResponse := web.Response{
 		Code:   200,
@@ -64,9 +65,9 @@ func (controller *UserControllerImpl) Get(ctx *fiber.Ctx) error {
 
 func (controller *UserControllerImpl) Logout(ctx *fiber.Ctx) error {
 	// Get user from context (should be set by auth middleware)
-	user := ctx.Locals("user").(*domain.User)
+	newUser := ctx.Locals("user").(*domain.User)
 
-	controller.UserService.Logout(ctx, *user)
+	controller.UserService.Logout(ctx, *newUser)
 
 	webResponse := web.Response{
 		Code:   200,
@@ -79,13 +80,13 @@ func (controller *UserControllerImpl) Logout(ctx *fiber.Ctx) error {
 
 func (controller *UserControllerImpl) Update(ctx *fiber.Ctx) error {
 	// Get user from context (should be set by auth middleware)
-	user := ctx.Locals("user").(*domain.User)
+	newUser := ctx.Locals("user").(*domain.User)
 
-	var request web.UserUpdateRequest
+	var request user.UserUpdateRequest
 	err := ctx.BodyParser(&request)
 	helper.PanicIfError(err)
 
-	userResponse := controller.UserService.Update(ctx, *user, request)
+	userResponse := controller.UserService.Update(ctx, *newUser, request)
 
 	webResponse := web.Response{
 		Code:   200,

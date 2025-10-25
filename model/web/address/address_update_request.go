@@ -1,4 +1,4 @@
-package web
+package address
 
 type AddressUpdateRequest struct {
 	Street     string `json:"street" validate:"omitempty,min=1,max=200"`

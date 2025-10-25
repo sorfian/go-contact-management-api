@@ -1,4 +1,4 @@
-package web
+package contact
 
 type ContactResponse struct {
 	ID        int64  `json:"id"`

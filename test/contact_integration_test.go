@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/sorfian/go-todo-list/model/web"
+	"github.com/sorfian/go-todo-list/model/web/contact"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +20,7 @@ func TestCreateContactSuccess(t *testing.T) {
 	token := registerAndLogin(t, "testcontact1", "password123", "Test Contact User 1")
 
 	// Create contact
-	requestBody := web.ContactCreateRequest{
+	requestBody := contact.ContactCreateRequest{
 		FirstName: "John",
 		LastName:  "Doe",
 		Email:     "john.doe@example.com",
@@ -61,7 +62,7 @@ func TestCreateContactValidationFailed(t *testing.T) {
 	token := registerAndLogin(t, "testcontact2", "password123", "Test Contact User 2")
 
 	// Create contact with invalid data
-	requestBody := web.ContactCreateRequest{
+	requestBody := contact.ContactCreateRequest{
 		FirstName: "",
 		LastName:  "",
 		Email:     "invalid-email",
@@ -83,7 +84,7 @@ func TestCreateContactValidationFailed(t *testing.T) {
 func TestCreateContactUnauthorized(t *testing.T) {
 	cleanupTestData()
 
-	requestBody := web.ContactCreateRequest{
+	requestBody := contact.ContactCreateRequest{
 		FirstName: "John",
 		LastName:  "Doe",
 		Email:     "john.doe@example.com",
@@ -190,7 +191,7 @@ func TestUpdateContactSuccess(t *testing.T) {
 	contactID := createTestContact(t, token, "Original", "Name", "original@example.com", "08111111111")
 
 	// Update contact
-	updateBody := web.ContactUpdateRequest{
+	updateBody := contact.ContactUpdateRequest{
 		FirstName: "Updated",
 		LastName:  "Name",
 		Email:     "updated@example.com",
@@ -224,7 +225,7 @@ func TestUpdateContactNotFound(t *testing.T) {
 
 	token := registerAndLogin(t, "testcontact7", "password123", "Test Contact User 7")
 
-	updateBody := web.ContactUpdateRequest{
+	updateBody := contact.ContactUpdateRequest{
 		FirstName: "Updated",
 	}
 
@@ -284,7 +285,7 @@ func TestDeleteContactNotFound(t *testing.T) {
 
 // Helper function to create a test contact and return its ID
 func createTestContact(t *testing.T, token, firstName, lastName, email, phone string) string {
-	requestBody := web.ContactCreateRequest{
+	requestBody := contact.ContactCreateRequest{
 		FirstName: firstName,
 		LastName:  lastName,
 		Email:     email,
@@ -299,7 +300,10 @@ func createTestContact(t *testing.T, token, firstName, lastName, email, phone st
 	resp, _ := testApp.Test(req, -1)
 	body, _ := io.ReadAll(resp.Body)
 	var response web.Response
-	json.Unmarshal(body, &response)
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return ""
+	}
 
 	contactResponse := response.Data.(map[string]interface{})
 	contactID := contactResponse["id"].(float64)

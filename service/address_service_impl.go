@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sorfian/go-todo-list/helper"
 	"github.com/sorfian/go-todo-list/model/domain"
-	"github.com/sorfian/go-todo-list/model/web"
+	"github.com/sorfian/go-todo-list/model/web/address"
 	"github.com/sorfian/go-todo-list/repository"
 	"gorm.io/gorm"
 )
@@ -26,7 +26,7 @@ func NewAddressService(addressRepository repository.AddressRepository, contactRe
 	}
 }
 
-func (service *AddressServiceImpl) Create(ctx *fiber.Ctx, user domain.User, contactID int64, request *web.AddressCreateRequest) web.AddressResponse {
+func (service *AddressServiceImpl) Create(ctx *fiber.Ctx, user domain.User, contactID int64, request *address.AddressCreateRequest) address.AddressResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -39,7 +39,7 @@ func (service *AddressServiceImpl) Create(ctx *fiber.Ctx, user domain.User, cont
 		panic(helper.NewNotFoundError("contact not found"))
 	}
 
-	address := domain.Address{
+	newAddress := domain.Address{
 		ContactID:  contactID,
 		Street:     request.Street,
 		City:       request.City,
@@ -48,9 +48,9 @@ func (service *AddressServiceImpl) Create(ctx *fiber.Ctx, user domain.User, cont
 		PostalCode: request.PostalCode,
 	}
 
-	createdAddress := service.AddressRepository.Create(ctx, tx, address)
+	createdAddress := service.AddressRepository.Create(ctx, tx, newAddress)
 
-	return web.AddressResponse{
+	return address.AddressResponse{
 		ID:         createdAddress.ID,
 		Street:     createdAddress.Street,
 		City:       createdAddress.City,
@@ -60,7 +60,7 @@ func (service *AddressServiceImpl) Create(ctx *fiber.Ctx, user domain.User, cont
 	}
 }
 
-func (service *AddressServiceImpl) Get(ctx *fiber.Ctx, user domain.User, contactID int64, addressID int64) web.AddressResponse {
+func (service *AddressServiceImpl) Get(ctx *fiber.Ctx, user domain.User, contactID int64, addressID int64) address.AddressResponse {
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
@@ -70,26 +70,26 @@ func (service *AddressServiceImpl) Get(ctx *fiber.Ctx, user domain.User, contact
 		panic(helper.NewNotFoundError("contact not found"))
 	}
 
-	address, err := service.AddressRepository.FindById(ctx, tx, addressID, contactID)
+	addressEntity, err := service.AddressRepository.FindById(ctx, tx, addressID, contactID)
 	if err != nil {
 		panic(helper.NewNotFoundError("address not found"))
 	}
 
-	return web.AddressResponse{
-		ID:         address.ID,
-		Street:     address.Street,
-		City:       address.City,
-		Province:   address.Province,
-		Country:    address.Country,
-		PostalCode: address.PostalCode,
+	return address.AddressResponse{
+		ID:         addressEntity.ID,
+		Street:     addressEntity.Street,
+		City:       addressEntity.City,
+		Province:   addressEntity.Province,
+		Country:    addressEntity.Country,
+		PostalCode: addressEntity.PostalCode,
 	}
 }
 
-func (service *AddressServiceImpl) GetAll(ctx *fiber.Ctx, user domain.User, contactID int64) []web.AddressResponse {
+func (service *AddressServiceImpl) GetAll(ctx *fiber.Ctx, user domain.User, contactID int64) []address.AddressResponse {
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
-	// Verify contact belongs to user
+	// Verify contact belongs to a user
 	_, err := service.ContactRepository.FindById(ctx, tx, contactID, user.ID)
 	if err != nil {
 		panic(helper.NewNotFoundError("contact not found"))
@@ -97,62 +97,62 @@ func (service *AddressServiceImpl) GetAll(ctx *fiber.Ctx, user domain.User, cont
 
 	addresses := service.AddressRepository.FindAll(ctx, tx, contactID)
 
-	var addressResponses []web.AddressResponse
-	for _, address := range addresses {
-		addressResponses = append(addressResponses, web.AddressResponse{
-			ID:         address.ID,
-			Street:     address.Street,
-			City:       address.City,
-			Province:   address.Province,
-			Country:    address.Country,
-			PostalCode: address.PostalCode,
+	var addressResponses []address.AddressResponse
+	for _, newAddress := range addresses {
+		addressResponses = append(addressResponses, address.AddressResponse{
+			ID:         newAddress.ID,
+			Street:     newAddress.Street,
+			City:       newAddress.City,
+			Province:   newAddress.Province,
+			Country:    newAddress.Country,
+			PostalCode: newAddress.PostalCode,
 		})
 	}
 
 	return addressResponses
 }
 
-func (service *AddressServiceImpl) Update(ctx *fiber.Ctx, user domain.User, contactID int64, addressID int64, request web.AddressUpdateRequest) web.AddressResponse {
+func (service *AddressServiceImpl) Update(ctx *fiber.Ctx, user domain.User, contactID int64, addressID int64, request address.AddressUpdateRequest) address.AddressResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
-	// Verify contact belongs to user
+	// Verify contact belongs to a user
 	_, err = service.ContactRepository.FindById(ctx, tx, contactID, user.ID)
 	if err != nil {
 		panic(helper.NewNotFoundError("contact not found"))
 	}
 
-	address, err := service.AddressRepository.FindById(ctx, tx, addressID, contactID)
+	addressEntity, err := service.AddressRepository.FindById(ctx, tx, addressID, contactID)
 	if err != nil {
 		panic(helper.NewNotFoundError("address not found"))
 	}
 
 	if request.Street != "" {
-		address.Street = request.Street
+		addressEntity.Street = request.Street
 	}
 
 	if request.City != "" {
-		address.City = request.City
+		addressEntity.City = request.City
 	}
 
 	if request.Province != "" {
-		address.Province = request.Province
+		addressEntity.Province = request.Province
 	}
 
 	if request.Country != "" {
-		address.Country = request.Country
+		addressEntity.Country = request.Country
 	}
 
 	if request.PostalCode != "" {
-		address.PostalCode = request.PostalCode
+		addressEntity.PostalCode = request.PostalCode
 	}
 
-	updatedAddress := service.AddressRepository.Update(ctx, tx, address)
+	updatedAddress := service.AddressRepository.Update(ctx, tx, addressEntity)
 
-	return web.AddressResponse{
+	return address.AddressResponse{
 		ID:         updatedAddress.ID,
 		Street:     updatedAddress.Street,
 		City:       updatedAddress.City,
@@ -166,17 +166,17 @@ func (service *AddressServiceImpl) Delete(ctx *fiber.Ctx, user domain.User, cont
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
-	// Verify contact belongs to user
+	// Verify contact belongs to a user
 	_, err := service.ContactRepository.FindById(ctx, tx, contactID, user.ID)
 	if err != nil {
 		panic(helper.NewNotFoundError("contact not found"))
 	}
 
-	address, err := service.AddressRepository.FindById(ctx, tx, addressID, contactID)
+	addressEntity, err := service.AddressRepository.FindById(ctx, tx, addressID, contactID)
 	if err != nil {
 		panic(helper.NewNotFoundError("address not found"))
 	}
 
-	err = service.AddressRepository.Delete(ctx, tx, address)
+	err = service.AddressRepository.Delete(ctx, tx, addressEntity)
 	helper.PanicIfError(err)
 }

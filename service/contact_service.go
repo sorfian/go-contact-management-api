@@ -3,13 +3,13 @@ package service
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sorfian/go-todo-list/model/domain"
-	"github.com/sorfian/go-todo-list/model/web"
+	"github.com/sorfian/go-todo-list/model/web/contact"
 )
 
 type ContactService interface {
-	Create(ctx *fiber.Ctx, user domain.User, request *web.ContactCreateRequest) web.ContactResponse
-	Get(ctx *fiber.Ctx, user domain.User, contactID int64) web.ContactResponse
-	GetAll(ctx *fiber.Ctx, user domain.User) []web.ContactResponse
-	Update(ctx *fiber.Ctx, user domain.User, contactID int64, request web.ContactUpdateRequest) web.ContactResponse
+	Create(ctx *fiber.Ctx, user domain.User, request *contact.ContactCreateRequest) contact.ContactResponse
+	Get(ctx *fiber.Ctx, user domain.User, contactID int64) contact.ContactResponse
+	GetAll(ctx *fiber.Ctx, user domain.User) []contact.ContactResponse
+	Update(ctx *fiber.Ctx, user domain.User, contactID int64, request contact.ContactUpdateRequest) contact.ContactResponse
 	Delete(ctx *fiber.Ctx, user domain.User, contactID int64)
 }

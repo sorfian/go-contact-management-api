@@ -1,4 +1,4 @@
-package web
+package address
 
 type AddressCreateRequest struct {
 	Street     string `json:"street" validate:"required,min=1,max=200"`

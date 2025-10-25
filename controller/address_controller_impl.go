@@ -7,6 +7,7 @@ import (
 	"github.com/sorfian/go-todo-list/helper"
 	"github.com/sorfian/go-todo-list/model/domain"
 	"github.com/sorfian/go-todo-list/model/web"
+	"github.com/sorfian/go-todo-list/model/web/address"
 	"github.com/sorfian/go-todo-list/service"
 )
 
@@ -24,7 +25,7 @@ func (controller *AddressControllerImpl) Create(ctx *fiber.Ctx) error {
 	contactID, err := strconv.ParseInt(ctx.Params("contactId"), 10, 64)
 	helper.PanicIfError(err)
 
-	request := web.AddressCreateRequest{}
+	request := address.AddressCreateRequest{}
 	err = ctx.BodyParser(&request)
 	helper.PanicIfError(err)
 
@@ -85,7 +86,7 @@ func (controller *AddressControllerImpl) Update(ctx *fiber.Ctx) error {
 	addressID, err := strconv.ParseInt(ctx.Params("addressId"), 10, 64)
 	helper.PanicIfError(err)
 
-	var request web.AddressUpdateRequest
+	var request address.AddressUpdateRequest
 	err = ctx.BodyParser(&request)
 	helper.PanicIfError(err)
 

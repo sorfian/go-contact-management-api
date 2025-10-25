@@ -1,4 +1,4 @@
-package web
+package address
 
 type AddressResponse struct {
 	ID         int64  `json:"id"`

@@ -6,6 +6,7 @@ import (
 	"github.com/sorfian/go-todo-list/helper"
 	"github.com/sorfian/go-todo-list/model/domain"
 	"github.com/sorfian/go-todo-list/model/web"
+	"github.com/sorfian/go-todo-list/model/web/user"
 	"github.com/sorfian/go-todo-list/repository"
 	"gorm.io/gorm"
 )
@@ -20,7 +21,7 @@ func NewUserService(userRepository repository.UserRepository, DB *gorm.DB, valid
 	return &UserServiceImpl{UserRepository: userRepository, DB: DB, Validate: validate}
 }
 
-func (service *UserServiceImpl) Register(ctx *fiber.Ctx, request *web.UserRegisterRequest) web.TokenResponse {
+func (service *UserServiceImpl) Register(ctx *fiber.Ctx, request *user.UserRegisterRequest) web.TokenResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -53,19 +54,19 @@ func (service *UserServiceImpl) Register(ctx *fiber.Ctx, request *web.UserRegist
 	return web.TokenResponse{Token: createdUser.Token, TokenExp: createdUser.TokenExp}
 }
 
-func (service *UserServiceImpl) Login(ctx *fiber.Ctx, request *web.UserLoginRequest) web.TokenResponse {
+func (service *UserServiceImpl) Login(ctx *fiber.Ctx, request *user.UserLoginRequest) web.TokenResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
-	user, err := service.UserRepository.FindByUsername(ctx, tx, request.Username)
+	newUser, err := service.UserRepository.FindByUsername(ctx, tx, request.Username)
 	if err != nil {
 		panic(helper.NewNotFoundError("username is incorrect"))
 	}
 
-	err = helper.VerifyPassword(user.Password, request.Password)
+	err = helper.VerifyPassword(newUser.Password, request.Password)
 	if err != nil {
 		panic(helper.NewNotFoundError("password is incorrect"))
 	}
@@ -75,10 +76,10 @@ func (service *UserServiceImpl) Login(ctx *fiber.Ctx, request *web.UserLoginRequ
 
 	tokenExp := helper.GetTokenExpiration(30)
 
-	user.Token = token
-	user.TokenExp = tokenExp
+	newUser.Token = token
+	newUser.TokenExp = tokenExp
 
-	updatedUser := service.UserRepository.Update(ctx, tx, user)
+	updatedUser := service.UserRepository.Update(ctx, tx, newUser)
 
 	return web.TokenResponse{
 		Token:    updatedUser.Token,
@@ -86,10 +87,10 @@ func (service *UserServiceImpl) Login(ctx *fiber.Ctx, request *web.UserLoginRequ
 	}
 }
 
-func (service *UserServiceImpl) Get(ctx *fiber.Ctx, user domain.User) web.UserResponse {
-	return web.UserResponse{
-		Username: user.Username,
-		Name:     user.Name,
+func (service *UserServiceImpl) Get(ctx *fiber.Ctx, newUser domain.User) user.UserResponse {
+	return user.UserResponse{
+		Username: newUser.Username,
+		Name:     newUser.Name,
 	}
 }
 
@@ -103,7 +104,7 @@ func (service *UserServiceImpl) Logout(ctx *fiber.Ctx, user domain.User) {
 	service.UserRepository.Update(ctx, tx, &user)
 }
 
-func (service *UserServiceImpl) Update(ctx *fiber.Ctx, user domain.User, request web.UserUpdateRequest) web.UserResponse {
+func (service *UserServiceImpl) Update(ctx *fiber.Ctx, newUser domain.User, request user.UserUpdateRequest) user.UserResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
@@ -111,18 +112,18 @@ func (service *UserServiceImpl) Update(ctx *fiber.Ctx, user domain.User, request
 	defer helper.CommitOrRollback(tx)
 
 	if request.Name != "" {
-		user.Name = request.Name
+		newUser.Name = request.Name
 	}
 
 	if request.Password != "" {
 		hashedPassword, err := helper.HashPassword(request.Password)
 		helper.PanicIfError(err)
-		user.Password = hashedPassword
+		newUser.Password = hashedPassword
 	}
 
-	updatedUser := service.UserRepository.Update(ctx, tx, &user)
+	updatedUser := service.UserRepository.Update(ctx, tx, &newUser)
 
-	return web.UserResponse{
+	return user.UserResponse{
 		Username: updatedUser.Username,
 		Name:     updatedUser.Name,
 	}

@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/sorfian/go-todo-list/model/web"
+	"github.com/sorfian/go-todo-list/model/web/address"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +20,7 @@ func TestCreateAddressSuccess(t *testing.T) {
 	contactID := createTestContact(t, token, "John", "Doe", "john@example.com", "08123456789")
 
 	// Create address
-	requestBody := web.AddressCreateRequest{
+	requestBody := address.AddressCreateRequest{
 		Street:     "Jl. Sudirman No. 123",
 		City:       "Jakarta",
 		Province:   "DKI Jakarta",
@@ -62,7 +63,7 @@ func TestCreateAddressValidationFailed(t *testing.T) {
 	contactID := createTestContact(t, token, "John", "Doe", "john@example.com", "08123456789")
 
 	// Create address with invalid data
-	requestBody := web.AddressCreateRequest{
+	requestBody := address.AddressCreateRequest{
 		Street:     "",
 		City:       "",
 		Province:   "",
@@ -87,7 +88,7 @@ func TestCreateAddressContactNotFound(t *testing.T) {
 
 	token := registerAndLogin(t, "testaddress3", "password123", "Test Address User 3")
 
-	requestBody := web.AddressCreateRequest{
+	requestBody := address.AddressCreateRequest{
 		Street:     "Jl. Sudirman No. 123",
 		City:       "Jakarta",
 		Province:   "DKI Jakarta",
@@ -195,7 +196,7 @@ func TestUpdateAddressSuccess(t *testing.T) {
 	addressID := createTestAddress(t, token, contactID, "Old Street", "Old City", "Old Province", "Indonesia", "11111")
 
 	// Update address
-	updateBody := web.AddressUpdateRequest{
+	updateBody := address.AddressUpdateRequest{
 		Street:     "New Street",
 		City:       "New City",
 		Province:   "New Province",
@@ -232,7 +233,7 @@ func TestUpdateAddressNotFound(t *testing.T) {
 	token := registerAndLogin(t, "testaddress8", "password123", "Test Address User 8")
 	contactID := createTestContact(t, token, "John", "Doe", "john@example.com", "08123456789")
 
-	updateBody := web.AddressUpdateRequest{
+	updateBody := address.AddressUpdateRequest{
 		Street: "Updated Street",
 	}
 
@@ -292,7 +293,7 @@ func TestDeleteAddressNotFound(t *testing.T) {
 
 // Helper function to create a test address and return its ID
 func createTestAddress(t *testing.T, token, contactID, street, city, province, country, postalCode string) string {
-	requestBody := web.AddressCreateRequest{
+	requestBody := address.AddressCreateRequest{
 		Street:     street,
 		City:       city,
 		Province:   province,
@@ -308,7 +309,10 @@ func createTestAddress(t *testing.T, token, contactID, street, city, province, c
 	resp, _ := testApp.Test(req, -1)
 	body, _ := io.ReadAll(resp.Body)
 	var response web.Response
-	json.Unmarshal(body, &response)
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return ""
+	}
 
 	addressResponse := response.Data.(map[string]interface{})
 	addressID := addressResponse["id"].(float64)

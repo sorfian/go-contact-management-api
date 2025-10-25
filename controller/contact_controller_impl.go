@@ -7,6 +7,7 @@ import (
 	"github.com/sorfian/go-todo-list/helper"
 	"github.com/sorfian/go-todo-list/model/domain"
 	"github.com/sorfian/go-todo-list/model/web"
+	"github.com/sorfian/go-todo-list/model/web/contact"
 	"github.com/sorfian/go-todo-list/service"
 )
 
@@ -21,7 +22,7 @@ func NewContactController(contactService service.ContactService) ContactControll
 func (controller *ContactControllerImpl) Create(ctx *fiber.Ctx) error {
 	user := ctx.Locals("user").(*domain.User)
 
-	request := web.ContactCreateRequest{}
+	request := contact.ContactCreateRequest{}
 	err := ctx.BodyParser(&request)
 	helper.PanicIfError(err)
 
@@ -73,7 +74,7 @@ func (controller *ContactControllerImpl) Update(ctx *fiber.Ctx) error {
 	contactID, err := strconv.ParseInt(ctx.Params("contactId"), 10, 64)
 	helper.PanicIfError(err)
 
-	var request web.ContactUpdateRequest
+	var request contact.ContactUpdateRequest
 	err = ctx.BodyParser(&request)
 	helper.PanicIfError(err)
 

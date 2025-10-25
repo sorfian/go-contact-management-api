@@ -14,6 +14,7 @@ import (
 	"github.com/sorfian/go-todo-list/controller"
 	"github.com/sorfian/go-todo-list/helper"
 	"github.com/sorfian/go-todo-list/model/web"
+	"github.com/sorfian/go-todo-list/model/web/user"
 	"github.com/sorfian/go-todo-list/repository"
 	"github.com/sorfian/go-todo-list/service"
 	"github.com/stretchr/testify/assert"
@@ -102,7 +103,7 @@ func TestMain(m *testing.M) {
 func TestRegisterSuccess(t *testing.T) {
 	cleanupTestData()
 
-	requestBody := web.UserRegisterRequest{
+	requestBody := user.UserRegisterRequest{
 		Username: "testuser1",
 		Password: "password123",
 		Name:     "Test User 1",
@@ -136,7 +137,7 @@ func TestRegisterSuccess(t *testing.T) {
 func TestRegisterValidationFailed(t *testing.T) {
 	cleanupTestData()
 
-	requestBody := web.UserRegisterRequest{
+	requestBody := user.UserRegisterRequest{
 		Username: "te", // Too short
 		Password: "pa", // Too short
 		Name:     "T",  // Too short
@@ -166,7 +167,7 @@ func TestRegisterDuplicateUsername(t *testing.T) {
 	cleanupTestData()
 
 	// Register first user
-	requestBody := web.UserRegisterRequest{
+	requestBody := user.UserRegisterRequest{
 		Username: "testuser2",
 		Password: "password123",
 		Name:     "Test User 2",
@@ -196,7 +197,7 @@ func TestLoginSuccess(t *testing.T) {
 	cleanupTestData()
 
 	// Register user first
-	registerBody := web.UserRegisterRequest{
+	registerBody := user.UserRegisterRequest{
 		Username: "testuser3",
 		Password: "password123",
 		Name:     "Test User 3",
@@ -211,7 +212,7 @@ func TestLoginSuccess(t *testing.T) {
 	}
 
 	// Login
-	loginBody := web.UserLoginRequest{
+	loginBody := user.UserLoginRequest{
 		Username: "testuser3",
 		Password: "password123",
 	}
@@ -243,7 +244,7 @@ func TestLoginSuccess(t *testing.T) {
 func TestLoginWrongUsername(t *testing.T) {
 	cleanupTestData()
 
-	loginBody := web.UserLoginRequest{
+	loginBody := user.UserLoginRequest{
 		Username: "nonexistentuser",
 		Password: "password123",
 	}
@@ -271,7 +272,7 @@ func TestLoginWrongPassword(t *testing.T) {
 	cleanupTestData()
 
 	// Register user first
-	registerBody := web.UserRegisterRequest{
+	registerBody := user.UserRegisterRequest{
 		Username: "testuser4",
 		Password: "password123",
 		Name:     "Test User 4",
@@ -286,7 +287,7 @@ func TestLoginWrongPassword(t *testing.T) {
 	}
 
 	// Login with the wrong password
-	loginBody := web.UserLoginRequest{
+	loginBody := user.UserLoginRequest{
 		Username: "testuser4",
 		Password: "wrongpassword",
 	}
@@ -373,7 +374,7 @@ func TestUpdateCurrentUserSuccess(t *testing.T) {
 	token := registerAndLogin(t, "testuser6", "password123", "Test User 6")
 
 	// Update user
-	updateBody := web.UserUpdateRequest{
+	updateBody := user.UserUpdateRequest{
 		Name:     "Updated Name",
 		Password: "newpassword123",
 	}
@@ -410,7 +411,7 @@ func TestUpdateCurrentUserOnlyName(t *testing.T) {
 	token := registerAndLogin(t, "testuser7", "password123", "Test User 7")
 
 	// Update only name
-	updateBody := web.UserUpdateRequest{
+	updateBody := user.UserUpdateRequest{
 		Name: "Only Name Updated",
 	}
 
@@ -438,7 +439,7 @@ func TestUpdateCurrentUserOnlyName(t *testing.T) {
 func TestUpdateCurrentUserUnauthorized(t *testing.T) {
 	cleanupTestData()
 
-	updateBody := web.UserUpdateRequest{
+	updateBody := user.UserUpdateRequest{
 		Name: "Should Fail",
 	}
 
@@ -503,7 +504,7 @@ func TestLogoutUnauthorized(t *testing.T) {
 // Helper function to register and login a user, returns token
 func registerAndLogin(t *testing.T, username, password, name string) string {
 	// Register
-	registerBody := web.UserRegisterRequest{
+	registerBody := user.UserRegisterRequest{
 		Username: username,
 		Password: password,
 		Name:     name,

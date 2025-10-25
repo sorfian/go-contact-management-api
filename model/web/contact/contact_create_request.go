@@ -1,4 +1,4 @@
-package web
+package contact
 
 type ContactCreateRequest struct {
 	FirstName string `json:"first_name" validate:"required,min=1,max=100"`

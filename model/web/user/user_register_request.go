@@ -1,4 +1,4 @@
-package web
+package user
 
 type UserRegisterRequest struct {
 	Username string `validate:"required,min=3,max=100" json:"username"`

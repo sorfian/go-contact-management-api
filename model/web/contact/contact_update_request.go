@@ -1,4 +1,4 @@
-package web
+package contact
 
 type ContactUpdateRequest struct {
 	FirstName string `json:"first_name" validate:"omitempty,min=1,max=100"`

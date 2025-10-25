@@ -1,4 +1,4 @@
-package web
+package user
 
 type UserUpdateRequest struct {
 	Name     string `validate:"max=100" json:"name"`

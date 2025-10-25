@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sorfian/go-todo-list/helper"
 	"github.com/sorfian/go-todo-list/model/domain"
-	"github.com/sorfian/go-todo-list/model/web"
+	"github.com/sorfian/go-todo-list/model/web/contact"
 	"github.com/sorfian/go-todo-list/repository"
 	"gorm.io/gorm"
 )
@@ -20,14 +20,14 @@ func NewContactService(contactRepository repository.ContactRepository, DB *gorm.
 	return &ContactServiceImpl{ContactRepository: contactRepository, DB: DB, Validate: validate}
 }
 
-func (service *ContactServiceImpl) Create(ctx *fiber.Ctx, user domain.User, request *web.ContactCreateRequest) web.ContactResponse {
+func (service *ContactServiceImpl) Create(ctx *fiber.Ctx, user domain.User, request *contact.ContactCreateRequest) contact.ContactResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
-	contact := domain.Contact{
+	newContact := domain.Contact{
 		UserID:    user.ID,
 		FirstName: request.FirstName,
 		LastName:  request.LastName,
@@ -35,9 +35,9 @@ func (service *ContactServiceImpl) Create(ctx *fiber.Ctx, user domain.User, requ
 		Phone:     request.Phone,
 	}
 
-	createdContact := service.ContactRepository.Create(ctx, tx, contact)
+	createdContact := service.ContactRepository.Create(ctx, tx, newContact)
 
-	return web.ContactResponse{
+	return contact.ContactResponse{
 		ID:        createdContact.ID,
 		FirstName: createdContact.FirstName,
 		LastName:  createdContact.LastName,
@@ -46,75 +46,75 @@ func (service *ContactServiceImpl) Create(ctx *fiber.Ctx, user domain.User, requ
 	}
 }
 
-func (service *ContactServiceImpl) Get(ctx *fiber.Ctx, user domain.User, contactID int64) web.ContactResponse {
+func (service *ContactServiceImpl) Get(ctx *fiber.Ctx, user domain.User, contactID int64) contact.ContactResponse {
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
-	contact, err := service.ContactRepository.FindById(ctx, tx, contactID, user.ID)
+	newContact, err := service.ContactRepository.FindById(ctx, tx, contactID, user.ID)
 	if err != nil {
 		panic(helper.NewNotFoundError("contact not found"))
 	}
 
-	return web.ContactResponse{
-		ID:        contact.ID,
-		FirstName: contact.FirstName,
-		LastName:  contact.LastName,
-		Email:     contact.Email,
-		Phone:     contact.Phone,
+	return contact.ContactResponse{
+		ID:        newContact.ID,
+		FirstName: newContact.FirstName,
+		LastName:  newContact.LastName,
+		Email:     newContact.Email,
+		Phone:     newContact.Phone,
 	}
 }
 
-func (service *ContactServiceImpl) GetAll(ctx *fiber.Ctx, user domain.User) []web.ContactResponse {
+func (service *ContactServiceImpl) GetAll(ctx *fiber.Ctx, user domain.User) []contact.ContactResponse {
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
 	contacts := service.ContactRepository.FindAll(ctx, tx, user.ID)
 
-	var contactResponses []web.ContactResponse
-	for _, contact := range contacts {
-		contactResponses = append(contactResponses, web.ContactResponse{
-			ID:        contact.ID,
-			FirstName: contact.FirstName,
-			LastName:  contact.LastName,
-			Email:     contact.Email,
-			Phone:     contact.Phone,
+	var contactResponses []contact.ContactResponse
+	for _, newContact := range contacts {
+		contactResponses = append(contactResponses, contact.ContactResponse{
+			ID:        newContact.ID,
+			FirstName: newContact.FirstName,
+			LastName:  newContact.LastName,
+			Email:     newContact.Email,
+			Phone:     newContact.Phone,
 		})
 	}
 
 	return contactResponses
 }
 
-func (service *ContactServiceImpl) Update(ctx *fiber.Ctx, user domain.User, contactID int64, request web.ContactUpdateRequest) web.ContactResponse {
+func (service *ContactServiceImpl) Update(ctx *fiber.Ctx, user domain.User, contactID int64, request contact.ContactUpdateRequest) contact.ContactResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
 
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
-	contact, err := service.ContactRepository.FindById(ctx, tx, contactID, user.ID)
+	newContact, err := service.ContactRepository.FindById(ctx, tx, contactID, user.ID)
 	if err != nil {
 		panic(helper.NewNotFoundError("contact not found"))
 	}
 
 	if request.FirstName != "" {
-		contact.FirstName = request.FirstName
+		newContact.FirstName = request.FirstName
 	}
 
 	if request.LastName != "" {
-		contact.LastName = request.LastName
+		newContact.LastName = request.LastName
 	}
 
 	if request.Email != "" {
-		contact.Email = request.Email
+		newContact.Email = request.Email
 	}
 
 	if request.Phone != "" {
-		contact.Phone = request.Phone
+		newContact.Phone = request.Phone
 	}
 
-	updatedContact := service.ContactRepository.Update(ctx, tx, contact)
+	updatedContact := service.ContactRepository.Update(ctx, tx, newContact)
 
-	return web.ContactResponse{
+	return contact.ContactResponse{
 		ID:        updatedContact.ID,
 		FirstName: updatedContact.FirstName,
 		LastName:  updatedContact.LastName,
@@ -127,11 +127,11 @@ func (service *ContactServiceImpl) Delete(ctx *fiber.Ctx, user domain.User, cont
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
-	contact, err := service.ContactRepository.FindById(ctx, tx, contactID, user.ID)
+	newContact, err := service.ContactRepository.FindById(ctx, tx, contactID, user.ID)
 	if err != nil {
 		panic(helper.NewNotFoundError("contact not found"))
 	}
 
-	err = service.ContactRepository.Delete(ctx, tx, contact)
+	err = service.ContactRepository.Delete(ctx, tx, newContact)
 	helper.PanicIfError(err)
 }
