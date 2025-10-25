@@ -3,11 +3,10 @@ package app
 import (
 	"fmt"
 	"log"
-	"os"
-	"strconv"
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/sorfian/go-todo-list/helper"
 )
 
 type Config struct {
@@ -39,20 +38,20 @@ func LoadConfig() *Config {
 	}
 
 	config := &Config{
-		AppEnv:  getEnv("APP_ENV", "development"),
-		AppPort: getEnv("APP_PORT", "3000"),
+		AppEnv:  helper.GetEnv("APP_ENV", "development"),
+		AppPort: helper.GetEnv("APP_PORT", "3000"),
 		Database: DatabaseConfig{
-			Host:            getEnv("DB_HOST", "localhost"),
-			Port:            getEnv("DB_PORT", "3306"),
-			User:            getEnv("DB_USER", "root"),
-			Password:        getEnv("DB_PASSWORD", ""),
-			Name:            getEnv("DB_NAME", "go_todo_list"),
-			MaxIdleConns:    getEnvAsInt("DB_MAX_IDLE_CONNS", 10),
-			MaxOpenConns:    getEnvAsInt("DB_MAX_OPEN_CONNS", 100),
-			ConnMaxLifetime: getEnvAsDuration("DB_CONN_MAX_LIFETIME", 30*time.Minute),
-			ConnMaxIdleTime: getEnvAsDuration("DB_CONN_MAX_IDLE_TIME", 10*time.Minute),
+			Host:            helper.GetEnv("DB_HOST", "localhost"),
+			Port:            helper.GetEnv("DB_PORT", "3306"),
+			User:            helper.GetEnv("DB_USER", "root"),
+			Password:        helper.GetEnv("DB_PASSWORD", ""),
+			Name:            helper.GetEnv("DB_NAME", "go_todo_list"),
+			MaxIdleConns:    helper.GetEnvAsInt("DB_MAX_IDLE_CONNS", 10),
+			MaxOpenConns:    helper.GetEnvAsInt("DB_MAX_OPEN_CONNS", 100),
+			ConnMaxLifetime: helper.GetEnvAsDuration("DB_CONN_MAX_LIFETIME", 30*time.Minute),
+			ConnMaxIdleTime: helper.GetEnvAsDuration("DB_CONN_MAX_IDLE_TIME", 10*time.Minute),
 		},
-		LogLevel: getEnv("LOG_LEVEL", "info"),
+		LogLevel: helper.GetEnv("LOG_LEVEL", "info"),
 	}
 
 	AppConfig = config
@@ -68,28 +67,4 @@ func (c *Config) GetDSN() string {
 		c.Database.Port,
 		c.Database.Name,
 	)
-}
-
-// Helper functions
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
-}
-
-func getEnvAsInt(key string, defaultValue int) int {
-	valueStr := getEnv(key, "")
-	if value, err := strconv.Atoi(valueStr); err == nil {
-		return value
-	}
-	return defaultValue
-}
-
-func getEnvAsDuration(key string, defaultValue time.Duration) time.Duration {
-	valueStr := getEnv(key, "")
-	if value, err := time.ParseDuration(valueStr); err == nil {
-		return value
-	}
-	return defaultValue
 }
