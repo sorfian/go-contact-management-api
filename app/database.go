@@ -1,7 +1,7 @@
 package app
 
 import (
-	"time"
+	"log"
 
 	"github.com/sorfian/go-todo-list/helper"
 	"gorm.io/driver/mysql"
@@ -10,19 +10,36 @@ import (
 )
 
 func Connect() *gorm.DB {
-	dialect := mysql.Open("root:sorfia26@tcp(localhost:3306)/go_todo_list?charset=utf8mb4&parseTime=True&loc=Local")
+	// Load config
+	config := LoadConfig()
+
+	// Set log level based on environment
+	logLevel := logger.Info
+	if config.AppEnv == "production" {
+		logLevel = logger.Error
+	}
+
+	// Open a database connection
+	dialect := mysql.Open(config.GetDSN())
 	gormDB, err := gorm.Open(dialect, &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(logLevel),
 	})
 
 	helper.PanicIfError(err)
 
+	// Configure a connection pool
 	db, err := gormDB.DB()
 	helper.PanicIfError(err)
-	db.SetMaxIdleConns(10)
-	db.SetMaxOpenConns(100)
-	db.SetConnMaxLifetime(30 * time.Minute)
-	db.SetConnMaxIdleTime(10 * time.Minute)
+	db.SetMaxIdleConns(config.Database.MaxIdleConns)
+	db.SetMaxOpenConns(config.Database.MaxOpenConns)
+	db.SetConnMaxLifetime(config.Database.ConnMaxLifetime)
+	db.SetConnMaxIdleTime(config.Database.ConnMaxIdleTime)
+
+	log.Printf("Database connected successfully to %s:%s/%s",
+		config.Database.Host,
+		config.Database.Port,
+		config.Database.Name,
+	)
 
 	return gormDB
 }
