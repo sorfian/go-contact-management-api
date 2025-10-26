@@ -1,4 +1,4 @@
-# 🚀 Deployment Guide - Go Todo List App
+# 🚀 Deployment Guide - Go Contact Management App
 
 Panduan lengkap untuk menjalankan aplikasi di mode development dan production.
 
@@ -202,11 +202,11 @@ cd /path/to/app
 
 #### B. Systemd Service (Linux)
 
-Buat file `/etc/systemd/system/go-todo-list.service`:
+Buat file `/etc/systemd/system/go-contact-management.service`:
 
 ```ini
 [Unit]
-Description=Go Todo List API
+Description=Go Contact Management API
 After=network.target mysql.service
 
 [Service]
@@ -234,9 +234,9 @@ Enable dan start service:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable go-todo-list
-sudo systemctl start go-todo-list
-sudo systemctl status go-todo-list
+sudo systemctl enable go-contact-management
+sudo systemctl start go-contact-management
+sudo systemctl status go-contact-management
 ```
 
 #### C. Docker Deployment
@@ -322,7 +322,7 @@ docker-compose up -d
 
 ### 4. Nginx Reverse Proxy (Optional)
 
-Konfigurasi Nginx `/etc/nginx/sites-available/go-todo-list`:
+Konfigurasi Nginx `/etc/nginx/sites-available/go-contact-management`:
 
 ```nginx
 server {
@@ -346,7 +346,7 @@ server {
 Enable dan restart Nginx:
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/go-todo-list /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/go-contact-management /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 ```

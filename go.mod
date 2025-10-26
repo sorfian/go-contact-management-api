@@ -1,4 +1,4 @@
-module github.com/sorfian/go-todo-list
+module github.com/sorfian/go-contact-management-api
 
 go 1.25.3
 

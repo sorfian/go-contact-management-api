@@ -1,6 +1,6 @@
-# Go Todo List API
+# Go Contact Management API
 
-A RESTful Todo List API built with Go, Fiber, GORM (MySQL), and Google Wire for dependency injection. It provides user authentication plus CRUD for contacts and nested addresses. An OpenAPI specification is included.
+A RESTful Contact Management API built with Go, Fiber, GORM (MySQL), and Google Wire for dependency injection. It provides user authentication plus CRUD for contacts and nested addresses. An OpenAPI specification is included.
 
 Note: This README consolidates and updates information from QUICKSTART.md, DEPLOYMENT.md, and integration_test.md. See those files for deeper, task‑specific details.
 

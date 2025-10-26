@@ -1,6 +1,6 @@
 # ⚡ Quick Start Guide
 
-Panduan cepat untuk menjalankan aplikasi Go Todo List.
+Panduan cepat untuk menjalankan aplikasi Go Contact Management.
 
 ## 🏃 Development Mode
 
