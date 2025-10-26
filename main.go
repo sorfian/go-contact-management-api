@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/sorfian/go-todo-list/app"
+	"github.com/sorfian/go-contact-management-api/app"
 )
 
 func main() {

@@ -2,9 +2,9 @@ package service
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/sorfian/go-todo-list/model/domain"
-	"github.com/sorfian/go-todo-list/model/web"
-	"github.com/sorfian/go-todo-list/model/web/user"
+	"github.com/sorfian/go-contact-management-api/model/domain"
+	"github.com/sorfian/go-contact-management-api/model/web"
+	"github.com/sorfian/go-contact-management-api/model/web/user"
 )
 
 type UserService interface {

@@ -2,8 +2,8 @@ package repository
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/sorfian/go-todo-list/helper"
-	"github.com/sorfian/go-todo-list/model/domain"
+	"github.com/sorfian/go-contact-management-api/helper"
+	"github.com/sorfian/go-contact-management-api/model/domain"
 	"gorm.io/gorm"
 )
 

@@ -5,11 +5,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/sorfian/go-todo-list/app"
-	"github.com/sorfian/go-todo-list/controller"
-	"github.com/sorfian/go-todo-list/helper"
-	"github.com/sorfian/go-todo-list/model/web"
-	"github.com/sorfian/go-todo-list/repository"
+	"github.com/sorfian/go-contact-management-api/app"
+	"github.com/sorfian/go-contact-management-api/controller"
+	"github.com/sorfian/go-contact-management-api/helper"
+	"github.com/sorfian/go-contact-management-api/model/web"
+	"github.com/sorfian/go-contact-management-api/repository"
 	"gorm.io/gorm"
 )
 

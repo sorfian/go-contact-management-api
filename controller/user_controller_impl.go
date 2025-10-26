@@ -2,11 +2,11 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/sorfian/go-todo-list/helper"
-	"github.com/sorfian/go-todo-list/model/domain"
-	"github.com/sorfian/go-todo-list/model/web"
-	"github.com/sorfian/go-todo-list/model/web/user"
-	"github.com/sorfian/go-todo-list/service"
+	"github.com/sorfian/go-contact-management-api/helper"
+	"github.com/sorfian/go-contact-management-api/model/domain"
+	"github.com/sorfian/go-contact-management-api/model/web"
+	"github.com/sorfian/go-contact-management-api/model/web/user"
+	"github.com/sorfian/go-contact-management-api/service"
 )
 
 type UserControllerImpl struct {

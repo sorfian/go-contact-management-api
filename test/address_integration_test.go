@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/sorfian/go-todo-list/model/web"
-	"github.com/sorfian/go-todo-list/model/web/address"
+	"github.com/sorfian/go-contact-management-api/model/web"
+	"github.com/sorfian/go-contact-management-api/model/web/address"
 	"github.com/stretchr/testify/assert"
 )
 

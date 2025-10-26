@@ -3,10 +3,10 @@ package service
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/sorfian/go-todo-list/helper"
-	"github.com/sorfian/go-todo-list/model/domain"
-	"github.com/sorfian/go-todo-list/model/web/address"
-	"github.com/sorfian/go-todo-list/repository"
+	"github.com/sorfian/go-contact-management-api/helper"
+	"github.com/sorfian/go-contact-management-api/model/domain"
+	"github.com/sorfian/go-contact-management-api/model/web/address"
+	"github.com/sorfian/go-contact-management-api/repository"
 	"gorm.io/gorm"
 )
 

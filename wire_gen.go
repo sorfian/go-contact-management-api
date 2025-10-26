@@ -8,10 +8,10 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/sorfian/go-todo-list/app"
-	"github.com/sorfian/go-todo-list/controller"
-	"github.com/sorfian/go-todo-list/repository"
-	"github.com/sorfian/go-todo-list/service"
+	"github.com/sorfian/go-contact-management-api/app"
+	"github.com/sorfian/go-contact-management-api/controller"
+	"github.com/sorfian/go-contact-management-api/repository"
+	"github.com/sorfian/go-contact-management-api/service"
 	"gorm.io/gorm"
 )
 

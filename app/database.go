@@ -3,7 +3,7 @@ package app
 import (
 	"log"
 
-	"github.com/sorfian/go-todo-list/helper"
+	"github.com/sorfian/go-contact-management-api/helper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

@@ -2,9 +2,9 @@ package app
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/sorfian/go-todo-list/controller"
-	"github.com/sorfian/go-todo-list/middleware"
-	"github.com/sorfian/go-todo-list/repository"
+	"github.com/sorfian/go-contact-management-api/controller"
+	"github.com/sorfian/go-contact-management-api/middleware"
+	"github.com/sorfian/go-contact-management-api/repository"
 	"gorm.io/gorm"
 )
 

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/sorfian/go-todo-list/helper"
+	"github.com/sorfian/go-contact-management-api/helper"
 )
 
 type Config struct {
@@ -34,7 +34,10 @@ var AppConfig *Config
 func LoadConfig() *Config {
 	// Load .env file if exists (for development)
 	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found, using environment variables")
+		// Load .env file for testing environment
+		if err := godotenv.Load("../.env"); err != nil {
+			log.Println("No .env file found, using environment variables")
+		}
 	}
 
 	config := &Config{

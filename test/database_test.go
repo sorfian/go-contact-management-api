@@ -3,7 +3,7 @@ package test
 import (
 	"testing"
 
-	"github.com/sorfian/go-todo-list/app"
+	"github.com/sorfian/go-contact-management-api/app"
 	"github.com/stretchr/testify/assert"
 )
 

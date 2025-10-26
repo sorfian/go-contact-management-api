@@ -2,8 +2,8 @@ package service
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/sorfian/go-todo-list/model/domain"
-	"github.com/sorfian/go-todo-list/model/web/address"
+	"github.com/sorfian/go-contact-management-api/model/domain"
+	"github.com/sorfian/go-contact-management-api/model/web/address"
 )
 
 type AddressService interface {
