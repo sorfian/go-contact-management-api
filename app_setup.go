@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/sorfian/go-contact-management-api/app"
@@ -66,6 +67,11 @@ func setupFiberApp(
 	// Middleware
 	fiberApp.Use(recover.New())
 	fiberApp.Use(logger.New())
+	fiberApp.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowMethods: "*",
+		AllowHeaders: "*",
+	}))
 
 	// Setup routes
 	app.Router(fiberApp, userController, contactController, addressController, userRepository, db)
