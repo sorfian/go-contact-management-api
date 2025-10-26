@@ -18,6 +18,18 @@ func NewNotFoundError(error string) NotFoundError {
 	return NotFoundError{Err: error}
 }
 
+type ResourceConflictError struct {
+	Err string
+}
+
+func (e ResourceConflictError) Error() string {
+	return e.Err
+}
+
+func NewResourceConflictError(error string) ResourceConflictError {
+	return ResourceConflictError{Err: error}
+}
+
 type BadRequestError struct {
 	Err string
 }

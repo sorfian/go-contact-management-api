@@ -126,7 +126,7 @@ func TestRegisterDuplicateUsername(t *testing.T) {
 
 	resp, err := testApp.Test(req2, -1)
 	assert.NoError(t, err)
-	assert.Equal(t, fiber.StatusNotFound, resp.StatusCode)
+	assert.Equal(t, fiber.StatusConflict, resp.StatusCode)
 
 	cleanupTestData()
 }

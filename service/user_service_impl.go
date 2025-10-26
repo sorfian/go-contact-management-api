@@ -30,7 +30,7 @@ func (service *UserServiceImpl) Register(ctx *fiber.Ctx, request *user.UserRegis
 
 	_, err = service.UserRepository.FindByUsername(ctx, tx, request.Username)
 	if err == nil {
-		panic(helper.NewNotFoundError("username already exists"))
+		panic(helper.NewResourceConflictError("username already exists"))
 	}
 
 	hashedPassword, err := helper.HashPassword(request.Password)

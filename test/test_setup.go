@@ -40,6 +40,10 @@ func setupTestFiberApp(
 				code = fiber.StatusNotFound
 				status = "Not Found"
 				message = e.Err
+			case helper.ResourceConflictError:
+				code = fiber.StatusConflict
+				status = "Resource Conflict"
+				message = e.Err
 			case helper.BadRequestError:
 				code = fiber.StatusBadRequest
 				status = "Bad Request"
