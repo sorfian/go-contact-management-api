@@ -23,7 +23,7 @@ func Router(app *fiber.App, userController controller.UserController, contactCon
 
 	users.Get("/current", authMiddleware.Authenticate(), userController.Get)
 	users.Patch("/current", authMiddleware.Authenticate(), userController.Update)
-	users.Delete("/current", authMiddleware.Authenticate(), userController.Logout)
+	users.Delete("/logout", authMiddleware.Authenticate(), userController.Logout)
 
 	// Contact routes
 	contacts := api.Group("/contacts", authMiddleware.Authenticate())
