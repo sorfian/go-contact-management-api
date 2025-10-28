@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sorfian/go-contact-management-api/helper"
 	"github.com/sorfian/go-contact-management-api/model/domain"
+	"github.com/sorfian/go-contact-management-api/model/web"
 	"github.com/sorfian/go-contact-management-api/model/web/contact"
 	"github.com/sorfian/go-contact-management-api/repository"
 	"gorm.io/gorm"
@@ -64,11 +65,17 @@ func (service *ContactServiceImpl) Get(ctx *fiber.Ctx, user domain.User, contact
 	}
 }
 
-func (service *ContactServiceImpl) GetAll(ctx *fiber.Ctx, user domain.User) []contact.ContactResponse {
+func (service *ContactServiceImpl) GetAll(ctx *fiber.Ctx, user domain.User, params contact.SearchParams) contact.SearchResult {
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
-	contacts := service.ContactRepository.FindAll(ctx, tx, user.ID)
+	offset := (params.Page - 1) * params.Size
+
+	// Panggil repository untuk get data dengan filter
+	contacts, totalItem := service.ContactRepository.FindAll(ctx, tx, user.ID, params, offset)
+
+	// Hitung total page
+	totalPage := (totalItem + params.Size - 1) / params.Size
 
 	var contactResponses []contact.ContactResponse
 	for _, newContact := range contacts {
@@ -81,7 +88,15 @@ func (service *ContactServiceImpl) GetAll(ctx *fiber.Ctx, user domain.User) []co
 		})
 	}
 
-	return contactResponses
+	return contact.SearchResult{
+		Contacts: contactResponses,
+		Paging: web.PagingResponse{
+			Page:      params.Page,
+			Size:      params.Size,
+			TotalPage: totalPage,
+			TotalItem: totalItem,
+		},
+	}
 }
 
 func (service *ContactServiceImpl) Update(ctx *fiber.Ctx, user domain.User, contactID int64, request contact.ContactUpdateRequest) contact.ContactResponse {

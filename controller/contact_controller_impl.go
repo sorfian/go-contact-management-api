@@ -57,7 +57,21 @@ func (controller *ContactControllerImpl) Get(ctx *fiber.Ctx) error {
 func (controller *ContactControllerImpl) GetAll(ctx *fiber.Ctx) error {
 	user := ctx.Locals("user").(*domain.User)
 
-	contactResponses := controller.ContactService.GetAll(ctx, *user)
+	name := ctx.Query("name", "")
+	phone := ctx.Query("phone", "")
+	email := ctx.Query("email", "")
+	page := ctx.QueryInt("page", 1)
+	size := ctx.QueryInt("size", 10)
+
+	searchParams := contact.SearchParams{
+		Name:  name,
+		Phone: phone,
+		Email: email,
+		Page:  page,
+		Size:  size,
+	}
+
+	contactResponses := controller.ContactService.GetAll(ctx, *user, searchParams)
 
 	webResponse := web.Response{
 		Code:   200,

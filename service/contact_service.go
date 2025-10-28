@@ -9,7 +9,7 @@ import (
 type ContactService interface {
 	Create(ctx *fiber.Ctx, user domain.User, request *contact.ContactCreateRequest) contact.ContactResponse
 	Get(ctx *fiber.Ctx, user domain.User, contactID int64) contact.ContactResponse
-	GetAll(ctx *fiber.Ctx, user domain.User) []contact.ContactResponse
+	GetAll(ctx *fiber.Ctx, user domain.User, param contact.SearchParams) contact.SearchResult
 	Update(ctx *fiber.Ctx, user domain.User, contactID int64, request contact.ContactUpdateRequest) contact.ContactResponse
 	Delete(ctx *fiber.Ctx, user domain.User, contactID int64)
 }
