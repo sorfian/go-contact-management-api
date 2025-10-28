@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
-  title: User Management API
-  description: RESTful API specification for User Management with Contact and Address
+  title: Contact Management API
+  description: RESTful API specification for Contact Management with Address
   version: 1.0.0
   contact:
     name: API Support
@@ -166,26 +166,46 @@ paths:
       security:
         - bearerAuth: []
       parameters:
+        - name: name
+          in: query
+          description: Search by first name or last name
+          required: false
+          schema:
+            type: string
+            example: "john"
+        - name: phone
+          in: query
+          description: Search by phone number
+          required: false
+          schema:
+            type: string
+            example: "0812"
+        - name: email
+          in: query
+          description: Search by email
+          required: false
+          schema:
+            type: string
+            example: "gmail"
         - name: page
           in: query
           description: Page number
+          required: false
           schema:
             type: integer
             default: 1
             minimum: 1
+            example: 1
         - name: size
           in: query
           description: Items per page
+          required: false
           schema:
             type: integer
             default: 10
             minimum: 1
             maximum: 100
-        - name: search
-          in: query
-          description: Search by first name, last name, email, or phone
-          schema:
-            type: string
+            example: 10
       responses:
         '200':
           description: List of contacts
