@@ -23,6 +23,7 @@ func setupFiberApp(
 	db *gorm.DB,
 ) *fiber.App {
 	fiberApp := fiber.New(fiber.Config{
+		Prefork: true,
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
 			status := "Internal Server Error"
