@@ -69,7 +69,7 @@ func setupFiberApp(
 	fiberApp.Use(logger.New())
 	fiberApp.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
-		AllowMethods: "*",
+		AllowMethods: "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 		AllowHeaders: "*",
 	}))
 
